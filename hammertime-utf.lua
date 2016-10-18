@@ -79,9 +79,14 @@ print("Session is " .. session)
 n = 0
 
 
+while debug == 1 end
 
 
-while "True" do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
+
+end
+
+while debug == 0 do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
+print("Running")
 sleep(100000)
 execd = 0 --idk
 parse()
@@ -89,12 +94,8 @@ parse()
 
 --Vhguide
 if command() == "vhguide" then
-	if argument(1) == "help" then exec("/msg " .. player() .. " Available commands : Shootme, Book, Callvote (permitted players only), Escrow ") end
-	if argument(1) == "book" then exec("/give " .. player() .. " book 1 0" ) end
-	if argument(1) == "escrow" then exec("/msg " .. player() .. " Escrow message placeholder") end
 	if argument(1) == "callvote" then initvote = 1 end
 	if argument(1) == "apt-get" and argument(2) == "moo" then exec("/summon Cow 0 300 0") end
-	if argument(1) == "shootme" then exec("/kill " .. player()) end
 	if argument(1) == "about" then exec("/say Hammertime Panel v" .. hammerver) exec("/say Written in Lua by MetoolDaddy") exec("/say Have you apt-get moo today?") end
 	if argument(1) == "vote" then--for voteban
 		if hasvoted[player()] ~= nil then exec("/msg " .. player() .. " You have already voted") else
@@ -127,10 +128,10 @@ if initvote == 1 and votetime == nil then
 			starttime = os.time()
 			target = argument(2)
 			if argument(3) == "ban" then
-				votetime = 120 exec("/say Vote ban brought up for " .. target)
+				votetime = ban_duration exec("/say Vote ban brought up for " .. target)
 				banvote = 1
 			else
-				votetime = 20 exec("/say Vote kick brought up for " .. target)
+				votetime = kick_duration exec("/say Vote kick brought up for " .. target)
 				banvote = 0
 			end
 			exec("/say Vote with §bvhguide §bvote §byes/no")
@@ -151,16 +152,21 @@ if os.time() > starttime + votetime then votetime = nil
 	votebalance = 0
 end
 end
-
-for letter in string.gmatch(ninput,"%u") do if letter ~= "" then caps = caps + 1 end end
-for letter in string.gmatch(ninput,"%l") do if letter ~= "" then lcase = lcase + 1 end end
-if caps > lcase and player() ~= "Failsafe" then
-exec("say Less caps, " .. player())
-if warnlevel[player()] == nil then warnlevel[player()] = 0 end
-warnlevel[player()] = warnlevel[player()] + 1
-
+if enable_caps_protection == 1 then
+	for letter in string.gmatch(ninput,"%u") do if letter ~= "" then caps = caps + 1 end end
+	for letter in string.gmatch(ninput,"%l") do if letter ~= "" then lcase = lcase + 1 end end
+	if caps > lcase and player() ~= "Failsafe" then
+		exec("say Less caps, " .. player())
+		if warnlevel[player()] == nil then warnlevel[player()] = 0 end
+		warnlevel[player()] = warnlevel[player()] + 1
+		if warnlevel[player()] > caps_kick_threshold and caps_kick_treshold ~= 0 then
+			exec("/kick " .. player() .. " Tone down the caps.")
+			warnlevel[player()] = 0
+		end
+	end
 end
 lcase = -12
 caps = 0
+
 
 end; --for while true
