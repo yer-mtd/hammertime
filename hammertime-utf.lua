@@ -7,7 +7,7 @@ if nbt == nil then print "Failed to load NBT.lua" end
 
 print("MetoolDaddy's Hammertime Panel")
 print("Running v"..hammerver)
-print("Using UTF-8 encoded sauce --what?")
+dofile("hammertime.conf")
 votebalance = 0
 --This started out as MA port so don't judge me
 target = ""
@@ -15,7 +15,7 @@ word = "a dummy string, hey"
 input = {} --Dummy table, hey
 hasvoted = {} --For callvote
 warnlevel = {}
-dofile("perms.lua")
+dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
 if amt then return var + amt else return var + 1 end
 end
@@ -26,23 +26,15 @@ function parse()
 		tid = -3
 		ninput = bash("tail -1 logs/latest.log")
 		if ninput == oinput then return nil end
-		oinput = ninput --Failsafe	
-		--print(ninput)
-		--print(oinput)
-		--print(bash("tail -1 logs/latest.log"))
-		--Splitting ninput into table
+		oinput = ninput --Failsafe
 		for word in string.gmatch(ninput,"%S+") do
 			tid = inc(tid)
-			--print(tid)
-			--print(word)
 			if tid > 0 then input[tid] = word end
 		end
-		--print(execd)
-		--if input[1] == "[Server]" then input[2] = "nope" end --Failsafe
 	end
 end
 
-function bash(cmd) --partially stolen
+function bash(cmd)
 	local f = assert(io.popen(cmd, 'r'))
 	local s = assert(f:read('*a'))
 	f:close()
@@ -65,17 +57,17 @@ end
 
 --Quality of life things
 function command() return input[2] end
-function player() 
+function player()
 	if input[1] == nil then input[1] = "Failsafe" end
 	input[1] = string.gsub(input[1],"<","")
 	input[1] = string.gsub(input[1],">","")
 	input[1] = string.gsub(input[1],"§[a-f0-9]","")
 	input[1] = string.gsub(input[1],"§r","")--Yeah ;-;
- 	return input[1] 
+ 	return input[1]
 end
 function argument(arg) return input[arg+2] end
 
-session = bash("screen -ls | grep Vanilla | awk '{print $1}'") --Getting screen session name
+session = bash("screen -ls | grep " .. server_name .. " | awk '{print $1}'") --Getting screen session name
 
 
 math.randomseed( os.time() )
@@ -96,7 +88,7 @@ parse()
 
 
 --Vhguide
-if command() == "vhguide" then 
+if command() == "vhguide" then
 	if argument(1) == "help" then exec("/msg " .. player() .. " Available commands : Shootme, Book, Callvote (permitted players only), Escrow ") end
 	if argument(1) == "book" then exec("/give " .. player() .. " book 1 0" ) end
 	if argument(1) == "escrow" then exec("/msg " .. player() .. " Escrow message placeholder") end
@@ -115,32 +107,34 @@ end
 
 
 --Movement messages (fly, speed, etc)
-flyingman = bash("tail -3 logs/latest.log | grep floating | awk '{print $4}'")
-if flyingman ~= "" then exec("/msg @a[tag=servernotice] " .. flyingman .. " was kicked for flying!") sleep(1000000) end
-
-if command() == "moved" and argument(1) == "wrongly!" then exec("/msg @a[tag=servernotice] " .. player() .. " is moving suspiciously") sleep(100000) end
-if command() == "moved" and argument(1) == "too" then exec("/msg @a[tag=servernotice] " .. player() .. " moved too fast") end
-
+if enable_movement_messages > 0 then
+	flyingman = bash("tail -3 logs/latest.log | grep floating | awk '{print $4}'")
+	if flyingman ~= "" then exec("/msg @a[tag=servernotice] " .. flyingman .. " was kicked for flying!") sleep(1000000) end
+	if enable_movement_messages > 1 then
+		if command() == "moved" and argument(1) == "wrongly!" then exec("/msg @a[tag=servernotice] " .. player() .. " is moving suspiciously") sleep(100000) end
+		if command() == "moved" and argument(1) == "too" then exec("/msg @a[tag=servernotice] " .. player() .. " moved too fast") end
+	end
+end
 
 --Voteban
 if initvote == 1 and votetime == nil then
 	initvote = 0
 	votebalance = 0
-	if argument(2) == nil then 
-		exec("/msg " .. player() .. " Incorrect syntax - missing target name") 
+	if argument(2) == nil then
+		exec("/msg " .. player() .. " Incorrect syntax - missing target name")
 	elseif callvoteperm[player()] ~= nil then
 			hasvoted = {}
 			starttime = os.time()
 			target = argument(2)
-			if argument(3) == "ban" then 
-				votetime = 120 exec("/say Vote ban brought up for " .. target) 
+			if argument(3) == "ban" then
+				votetime = 120 exec("/say Vote ban brought up for " .. target)
 				banvote = 1
-			else 
+			else
 				votetime = 20 exec("/say Vote kick brought up for " .. target)
-				banvote = 0 
+				banvote = 0
 			end
 			exec("/say Vote with §bvhguide §bvote §byes/no")
-		else exec("/say Insufficient permissions") 
+		else exec("/say Insufficient permissions")
 	end
 
 end
@@ -160,8 +154,8 @@ end
 
 for letter in string.gmatch(ninput,"%u") do if letter ~= "" then caps = caps + 1 end end
 for letter in string.gmatch(ninput,"%l") do if letter ~= "" then lcase = lcase + 1 end end
-if caps > lcase and player() ~= "Failsafe" then 
-exec("say Less caps, " .. player()) 
+if caps > lcase and player() ~= "Failsafe" then
+exec("say Less caps, " .. player())
 if warnlevel[player()] == nil then warnlevel[player()] = 0 end
 warnlevel[player()] = warnlevel[player()] + 1
 
