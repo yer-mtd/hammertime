@@ -20,7 +20,6 @@ print("MetoolDaddy's Hammertime Panel")
 print("Running v"..hammerver)
 dofile("hammertime.conf")
 votebalance = 0
---This started out as MA port so don't judge me
 target = ""
 word = "a dummy string, hey"
 input = {} --Dummy table, hey
@@ -116,6 +115,11 @@ if command() == "vhguide" then
 	end
 end
 
+if command() == "hammertime" then
+	if argument(1) == "reloadconfig" then dofile("hammertime.conf") exec("/say Config reloaded") end
+
+
+end
 
 --Movement messages (fly, speed, etc)
 if enable_movement_messages > 0 then
@@ -155,7 +159,7 @@ if os.time() > starttime + votetime then votetime = nil
 	hasvoted = {}
 	if votebalance > 0 then
 	exec("/say Vote passed")
-	if banvote == 1 then exec("/say Banning " .. target) exec("/ban " .. target .. " Voted off. Appeal at forum.vanillahigh.net") else exec("/say Kicking " .. target) exec("/kick " .. target .. " You have been voted off. Go chill down or whatever.") end
+	if banvote == 1 then exec("/say Banning " .. target) exec("/ban " .. target .. " " .. ban_message) else exec("/say Kicking " .. target) exec("/kick " .. target .. " " .. kick_message) end
 	else
 	exec("/say Vote failed")
 	end
@@ -177,6 +181,34 @@ if enable_caps_protection == 1 then
 end
 lcase = -12
 caps = 0
+
+if word_filter_mode == 2 then
+for index,word in pairs(banned_words) do
+
+	local linput = string.lower(ninput)
+	local lword = string.lower(word)
+	if string.find(linput,lword) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) end
+
+end
+end
+
+if word_filter_mode == 1 then
+for index,word in pairs(banned_words) do
+	for key,input in pairs(input) do
+
+	if string.lower(input) == string.lower(word) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) end
+
+	end
+end
+end
+
+
+
+
+
+
+
+
 
 
 end; --for while true
