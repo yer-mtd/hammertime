@@ -24,7 +24,8 @@ target = ""
 word = "a dummy string, hey"
 input = {} --Dummy table, hey
 hasvoted = {} --For callvote
-warnlevel = {}
+capswarnlevel = {}
+wordwarnlevel = {}
 dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
 if amt then return var + amt else return var + 1 end
@@ -108,9 +109,9 @@ if command() == "vhguide" then
 	if argument(1) == "about" then exec("/say Hammertime Panel v" .. hammerver) exec("/say Written in Lua by MetoolDaddy") exec("/say Have you apt-get moo today?") end
 	if argument(1) == "vote" then--for voteban
 		if hasvoted[player()] ~= nil then exec("/msg " .. player() .. " You have already voted") else
-			if argument(2) == "yes" then votebalance=votebalance + 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted UP (" .. votebalance .. ")") end
-			if argument(2) == "no" then votebalance=votebalance - 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted DOWN (" .. votebalance .. ")") end
-			if argument(2) == "fail" and callvoteperm[player()] == 2 then votebalance=-9001 exec("/say " .. player() .. " voted VERY DOWN (" .. votebalance .. ")") end
+			if argument(2) == "yes" then votebalance=votebalance + 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted YES (" .. votebalance .. ")") end
+			if argument(2) == "no" then votebalance=votebalance - 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted NO (" .. votebalance .. ")") end
+			if argument(2) == "fail" and callvoteperm[player()] == 2 then votebalance=-9001 exec("/say " .. player() .. " voted VERY NO (" .. votebalance .. ")") end
 		end
 	end
 end
@@ -171,38 +172,46 @@ if enable_caps_protection == 1 then
 	for letter in string.gmatch(ninput,"%l") do if letter ~= "" then lcase = lcase + 1 end end
 	if caps > lcase and player() ~= "Failsafe" then
 		exec("say Less caps, " .. player())
-		if warnlevel[player()] == nil then warnlevel[player()] = 0 end
-		warnlevel[player()] = warnlevel[player()] + 1
-		if warnlevel[player()] > caps_kick_threshold and caps_kick_treshold ~= 0 then
+		if capswarnlevel[player()] == nil then capswarnlevel[player()] = 0 end
+		capswarnlevel[player()] = capswarnlevel[player()] + 1
+		if capswarnlevel[player()] > caps_kick_threshold and caps_kick_treshold ~= 0 then
 			exec("/kick " .. player() .. " Tone down the caps.")
-			warnlevel[player()] = 0
+			capswarnlevel[player()] = 0
 		end
 	end
 end
 lcase = -12
 caps = 0
 
-if word_filter_mode == 2 then
-for index,word in pairs(banned_words) do
+if word_filter_mode > 0 then
+	if wordwarnlevel[player()] == nil then wordwarnlevel[player()] = 0 end
+	
 
-	local linput = string.lower(ninput)
-	local lword = string.lower(word)
-	if string.find(linput,lword) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) end
+	if word_filter_mode == 2 then
+		for index,word in pairs(banned_words) do
 
-end
-end
+			local linput = string.lower(ninput)
+			local lword = string.lower(word)
+			if string.find(linput,lword) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1 
+			end
 
-if word_filter_mode == 1 then
-for index,word in pairs(banned_words) do
-	for key,input in pairs(input) do
-
-	if string.lower(input) == string.lower(word) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) end
-
+		end	
 	end
-end
-end
 
+	if word_filter_mode == 1 then
+		for index,word in pairs(banned_words) do
+			for key,input in pairs(input) do
 
+			if string.lower(input) == string.lower(word) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1 
+			end
+	
+			end
+		end
+	end
+
+		if wordwarnlevel[player()] > word_kick_threshold then exec("kick " .. player() .. " Watch what you are saying.") wordwarnlevel[player()] = 0
+		end
+end
 
 
 
