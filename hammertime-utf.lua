@@ -35,7 +35,7 @@ function parse()
 	if execd == 0 then
 		input = {}
 		tid = -3
-		ninput = bash("tail -1 logs/latest.log")
+		ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
 		if ninput == oinput then return nil end
 		oinput = ninput --Failsafe
 		for word in string.gmatch(ninput,"%S+") do
@@ -90,14 +90,13 @@ print("Session is " .. session)
 n = 0
 
 
-while debug == 1 end
+while debug == 1 do
 
 
 
 end
 
 while debug == 0 do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
-print("Running")
 sleep(100000)
 execd = 0 --idk
 parse()
