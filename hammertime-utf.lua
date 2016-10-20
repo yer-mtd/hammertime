@@ -36,7 +36,6 @@ function parse()
 	if execd == 0 then
 		input = {}
 		tid = -3
-		ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
 		if ninput == oinput then return nil end
 		oinput = ninput --Failsafe
 		for word in string.gmatch(ninput,"%S+") do
@@ -100,6 +99,7 @@ end
 while debug == 0 do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
 sleep(100000)
 execd = 0 --idk
+ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
 parse()
 
 
@@ -215,11 +215,17 @@ if word_filter_mode > 0 then
 end
 
 
-if enable_ip_notifications == 1 and command() == "logged" and argument(1) == "in" and arguent(2) == "with" then
+if enable_ip_notifications == 1 then
+ninput = bash("tail -n 2 " .. server_path .. "logs/latest.log | grep 'logged in with'")
+parse()
+if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
+
+
+
 
 ip = string.gsub(input[1],"[A-Za-z]","") --Removes letters
-ip = string.gsub(ip,"[\[]","") --Removes [
-ip = string.gsub(ip,"[\]]","") --Removes ]
+ip = string.gsub(ip,"%[","") --Removes [
+ip = string.gsub(ip,"%]","") --Removes ]
 ip = string.gsub(ip,"/","") --Removes /
 ip = string.gsub(ip,":(%d+)"," ") --Removes port
 
@@ -229,11 +235,12 @@ name = string.gsub(input[1],"%A+","")
 --Three situations : IP is not known, IP is known and belongs to NAME, IP is known and doesn't belong to NAME
 --Second situation doesn't require threatment
 
-if knownip(ip) == nil then knownip(ip) = name end --Remembered IP as NAME's ip
-if knownip(ip) ~= name and knownip(ip) ~= nil then --IP is known and doesn't belong to NAME, shit is deep
-	exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip(ip) .." IPs match ")
+if knownip[ip] == nil then knownip[ip] = name print("Remembered", ip, name) end --Remembered IP as NAME's ip
+if knownip[ip] ~= name and knownip[ip] ~= nil then --IP is known and doesn't belong to NAME, shit is deep
+	exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip[ip] .. " IPs match ")
+print("Warning", name, ip, knownip[ip])
 end
-
+end
 
 
 
