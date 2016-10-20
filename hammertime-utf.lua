@@ -26,6 +26,7 @@ input = {} --Dummy table, hey
 hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
+knownip = {}
 dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
 if amt then return var + amt else return var + 1 end
@@ -127,8 +128,8 @@ if enable_movement_messages > 0 then
 	flyingman = bash("tail -3 logs/latest.log | grep floating | awk '{print $4}'")
 	if flyingman ~= "" then exec("/msg @a[tag=servernotice] " .. flyingman .. " was kicked for flying!") sleep(1000000) end
 	if enable_movement_messages > 1 then
-		if command() == "moved" and argument(1) == "wrongly!" then exec("/msg @a[tag=servernotice] " .. player() .. " is moving suspiciously") sleep(100000) end
-		if command() == "moved" and argument(1) == "too" then exec("/msg @a[tag=servernotice] " .. player() .. " moved too fast") end
+		if command() == "moved" and argument(1) == "wrongly!" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. player() .. " is moving suspiciously") sleep(100000) end
+		if command() == "moved" and argument(1) == "too" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. player() .. " moved too fast") end
 	end
 end
 
@@ -185,26 +186,26 @@ caps = 0
 
 if word_filter_mode > 0 then
 	if wordwarnlevel[player()] == nil then wordwarnlevel[player()] = 0 end
-	
+
 
 	if word_filter_mode == 2 then
 		for index,word in pairs(banned_words) do
 
 			local linput = string.lower(ninput)
 			local lword = string.lower(word)
-			if string.find(linput,lword) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1 
+			if string.find(linput,lword) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1
 			end
 
-		end	
+		end
 	end
 
 	if word_filter_mode == 1 then
 		for index,word in pairs(banned_words) do
 			for key,input in pairs(input) do
 
-			if string.lower(input) == string.lower(word) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1 
+			if string.lower(input) == string.lower(word) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1
 			end
-	
+
 			end
 		end
 	end
@@ -213,6 +214,31 @@ if word_filter_mode > 0 then
 		end
 end
 
+
+if enable_ip_notifications == 1 and command() == "logged" and argument(1) == "in" and arguent(2) == "with" then
+
+ip = string.gsub(input[1],"[A-Za-z]","") --Removes letters
+ip = string.gsub(ip,"[\[]","") --Removes [
+ip = string.gsub(ip,"[\]]","") --Removes ]
+ip = string.gsub(ip,"/","") --Removes /
+ip = string.gsub(ip,":(%d+)"," ") --Removes port
+
+ip = string.gsub(ip,"_","")
+name = string.gsub(input[1],"%A+","")
+
+--Three situations : IP is not known, IP is known and belongs to NAME, IP is known and doesn't belong to NAME
+--Second situation doesn't require threatment
+
+if knownip(ip) == nil then knownip(ip) = name end --Remembered IP as NAME's ip
+if knownip(ip) ~= name and knownip(ip) ~= nil then --IP is known and doesn't belong to NAME, shit is deep
+	exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip(ip) .." IPs match ")
+end
+
+
+
+
+
+end
 
 
 
