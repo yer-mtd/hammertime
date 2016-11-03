@@ -27,6 +27,7 @@ hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
 knownip = {}
+schedmes = 0
 dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
 if amt then return var + amt else return var + 1 end
@@ -172,7 +173,7 @@ if enable_caps_protection == 1 then
 	for letter in string.gmatch(ninput,"%u") do if letter ~= "" then caps = caps + 1 end end
 	for letter in string.gmatch(ninput,"%l") do if letter ~= "" then lcase = lcase + 1 end end
 	if caps > lcase and player() ~= "Failsafe" then
-		exec("say Less caps, " .. player())
+		exec("msg " .. player() .." Less caps, " .. player())
 		if capswarnlevel[player()] == nil then capswarnlevel[player()] = 0 end
 		capswarnlevel[player()] = capswarnlevel[player()] + 1
 		if capswarnlevel[player()] > caps_kick_threshold and caps_kick_treshold ~= 0 then
@@ -193,7 +194,7 @@ if word_filter_mode > 0 then
 
 			local linput = string.lower(ninput)
 			local lword = string.lower(word)
-			if string.find(linput,lword) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1
+			if string.find(linput,lword) and player() ~= "Failsafe" then exec("msg ".. player() .. " Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1
 			end
 
 		end
@@ -203,7 +204,7 @@ if word_filter_mode > 0 then
 		for index,word in pairs(banned_words) do
 			for key,input in pairs(input) do
 
-			if string.lower(input) == string.lower(word) and player() ~= "Failsafe" then exec("say Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1
+			if string.lower(input) == string.lower(word) and player() ~= "Failsafe" then exec("msg " .. player() .. " Bad words, " .. player()) wordwarnlevel[player()] = wordwarnlevel[player()] + 1
 			end
 
 			end
@@ -215,9 +216,10 @@ if word_filter_mode > 0 then
 end
 
 
-if enable_ip_notifications == 1 then
+if enable_ip_notifications == 1 and command() == "joined" and argument(1) == "the" and argument(2) == "game" then
 ninput = bash("tail -n 2 " .. server_path .. "logs/latest.log | grep 'logged in with'")
 parse()
+ninput = nil
 if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 
 
@@ -226,31 +228,31 @@ if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 ip = string.gsub(input[1],"[A-Za-z]","") --Removes letters
 ip = string.gsub(ip,"%[","") --Removes [
 ip = string.gsub(ip,"%]","") --Removes ]
-ip = string.gsub(ip,"/","") --Removes /
+ip = string.gsub(ip,"(%d+)/","") --Removes /
+ip = string.gsub(ip,"/","")
 ip = string.gsub(ip,":(%d+)"," ") --Removes port
 
 ip = string.gsub(ip,"_","")
-name = string.gsub(input[1],"%A+","")
+name = string.gsub(input[1],"%[(%A+)","")
+
 
 --Three situations : IP is not known, IP is known and belongs to NAME, IP is known and doesn't belong to NAME
 --Second situation doesn't require threatment
 
 if knownip[ip] == nil then knownip[ip] = name print("Remembered", ip, name) end --Remembered IP as NAME's ip
 if knownip[ip] ~= name and knownip[ip] ~= nil then --IP is known and doesn't belong to NAME, shit is deep
-	exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip[ip] .. " IPs match ")
+	schedmes = 5
+end
+end
+
+
+end
+
+schedmes = schedmes - 1
+if schedmes == 0 then
+exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip[ip] .. " IPs match ")
 print("Warning", name, ip, knownip[ip])
+schedmes = -1
 end
-end
-
-
-
-
-end
-
-
-
-
-
-
 
 end; --for while true
