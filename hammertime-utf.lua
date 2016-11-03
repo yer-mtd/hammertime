@@ -12,7 +12,7 @@
 --along with this program. If not, see http://www.gnu.org/licenses
 
 require "string"
-hammerver = 0.6
+hammerver = 0.9
 execd = 0
 
 
@@ -189,6 +189,7 @@ lcase = 0
 caps = 0
 
 if word_filter_mode > 0 then
+	ninput = string.gsub(ninput,"^.*>",""
 	if wordwarnlevel[player()] == nil then wordwarnlevel[player()] = 0 end
 
 
