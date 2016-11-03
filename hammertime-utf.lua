@@ -26,7 +26,7 @@ input = {} --Dummy table, hey
 hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
-knownip = {}
+dofile("known_ips.lua")
 schedmes = 0
 dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
