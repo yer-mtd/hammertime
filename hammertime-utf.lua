@@ -26,7 +26,7 @@ input = {} --Dummy table, hey
 hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
-dofile("known_ips.lua")
+knownip = {}
 schedmes = 0
 dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
@@ -97,7 +97,7 @@ while debug == 1 do
 
 end
 
-while debug == 0 do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
+while "True" do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
 sleep(100000)
 execd = 0 --idk
 ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
@@ -171,9 +171,11 @@ if os.time() > starttime + votetime then votetime = nil
 end
 end
 if enable_caps_protection == 1 then
+	ninput = string.gsub(ninput,"^.*>","")
 	for letter in string.gmatch(ninput,"%u") do if letter ~= "" then caps = caps + 1 end end
 	for letter in string.gmatch(ninput,"%l") do if letter ~= "" then lcase = lcase + 1 end end
 	if caps > lcase and player() ~= "Failsafe" then
+		print(ninput)
 		exec("msg " .. player() .." Less caps, " .. player())
 		if capswarnlevel[player()] == nil then capswarnlevel[player()] = 0 end
 		capswarnlevel[player()] = capswarnlevel[player()] + 1
@@ -183,7 +185,7 @@ if enable_caps_protection == 1 then
 		end
 	end
 end
-lcase = -12
+lcase = 0
 caps = 0
 
 if word_filter_mode > 0 then
@@ -255,5 +257,4 @@ exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip
 print("Warning", name, ip, knownip[ip])
 schedmes = -1
 end
-
 end; --for while true
