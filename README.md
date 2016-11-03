@@ -1,6 +1,6 @@
 # Hammertime Panel
 
-Companion for your vanilla server
+Extended moderation for your vanilla server
 
 Currently allows for : 
 
