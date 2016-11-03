@@ -105,7 +105,7 @@ parse()
 
 
 --Vhguide
-if command() == "vhguide" then
+if command() == namespace then
 	if argument(1) == "callvote" then initvote = 1 end
 	if argument(1) == "apt-get" and argument(2) == "moo" then exec("/summon Cow 0 300 0") end
 	if argument(1) == "about" then exec("/say Hammertime Panel v" .. hammerver) exec("/say Written in Lua by MetoolDaddy") exec("/say Have you apt-get moo today?") end
@@ -138,13 +138,14 @@ end
 if initvote == 1 and votetime == nil then
 	initvote = 0
 	votebalance = 0
-	if argument(2) == nil then
+if argument(2) == "kick" or argument(2) == "ban" then
+	if argument(3) == nil then
 		exec("/msg " .. player() .. " Incorrect syntax - missing target name")
 	elseif callvoteperm[player()] ~= nil then
 			hasvoted = {}
 			starttime = os.time()
-			target = argument(2)
-			if argument(3) == "ban" then
+			target = argument(3)
+			if argument(2) == "ban" then
 				votetime = ban_duration exec("/say Vote ban brought up for " .. target)
 				banvote = 1
 			else
@@ -154,7 +155,7 @@ if initvote == 1 and votetime == nil then
 			exec("/say Vote with §bvhguide §bvote §byes/no")
 		else exec("/say Insufficient permissions")
 	end
-
+end
 end
 if votetime then
 --print(os.time() .. " " .. starttime+votetime)
