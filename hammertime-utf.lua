@@ -27,6 +27,14 @@ hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
 dofile("watchlist.lua")
+--Making a read-only copy of knownip
+readknownip = {}
+for index,value in pairs(knownip) do
+readknownip[index] = value
+end
+
+
+
 if knownip == nil then knownip = {} end
 schedmes = 0
 dofile("perms.lua") --Loading various permissions
@@ -247,6 +255,14 @@ if knownip[ip] == nil and dothings then knownip[ip] = name print("Remembered", i
 		schedmes = 5
 	end
 end
+
+
+--So let's see here. I have a part of an IP, and I want to match it with list of IPs I have
+
+for index,value in pairs(readknownip) do
+	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Similiar IP : " .. name .. " and " .. readknownip[index])
+end
+
 
 
 oldname = name
