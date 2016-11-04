@@ -12,7 +12,7 @@
 --along with this program. If not, see http://www.gnu.org/licenses
 
 require "string"
-hammerver = 0.9
+hammerver = "0.9.1"
 execd = 0
 
 
@@ -108,7 +108,6 @@ parse()
 if command() == namespace then
 	if argument(1) == "callvote" then initvote = 1 end
 	if argument(1) == "apt-get" and argument(2) == "moo" then exec("/summon Cow 0 300 0") end
-	if argument(1) == "about" then exec("/say Hammertime Panel v" .. hammerver) exec("/say Written in Lua by MetoolDaddy") exec("/say Have you apt-get moo today?") end
 	if argument(1) == "vote" then--for voteban
 		if hasvoted[player()] ~= nil then exec("/msg " .. player() .. " You have already voted") else
 			if argument(2) == "yes" then votebalance=votebalance + 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted YES (" .. votebalance .. ")") end
@@ -120,7 +119,8 @@ end
 
 if command() == "hammertime" then
 	if argument(1) == "reloadconfig" then dofile("hammertime.conf") exec("/say Config reloaded") end
-
+	if argument(1) == "reloadperms" then dofile("perms.lua") exec("/say Permissions reloaded") end
+	if argument(1) == "about" then exec("/say Hammertime Panel v" .. hammerver) exec("/say Written in Lua by MetoolDaddy") exec("/say Have you apt-get moo today?") end
 
 end
 
