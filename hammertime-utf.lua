@@ -27,6 +27,7 @@ hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
 dofile("watchlist.lua")
+if knownip == nil then knownip = {} end
 schedmes = 0
 dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
