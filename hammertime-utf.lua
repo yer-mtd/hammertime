@@ -127,7 +127,7 @@ end
 
 --Movement messages (fly, speed, etc)
 if enable_movement_messages > 0 then
-	flyingman = bash("tail -3 logs/latest.log | grep floating | awk '{print $4}'")
+	flyingman = bash("tail -3 " .. server_path .. "logs/latest.log | grep floating | awk '{print $4}'")
 	if flyingman ~= "" then exec("/msg @a[tag=servernotice] " .. flyingman .. " was kicked for flying!") sleep(1000000) end
 	if enable_movement_messages > 1 then
 		if command() == "moved" and argument(1) == "wrongly!" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. player() .. " is moving suspiciously") sleep(100000) end
@@ -230,7 +230,7 @@ if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 
 
 
-ip = string.match(ninput,"%[/(.*):")
+ip = string.match(input[1],"%[/(.*):")
 name = string.gsub(input[1],"%[(%A+)","")
 
 exec("msg @a[tag=servernotice] " .. name .. " joined with IP " .. ip)
