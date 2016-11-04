@@ -1,6 +1,6 @@
 knownip = {
-"127.0.0.1" = "MetoolDaddy",
-"123.151.243.32" = "TryHardGamma"
+["127.0.0.1"] = "MetoolDaddy",
+["123.151.243.32"] = "TryHardGamma"
 
 
 
