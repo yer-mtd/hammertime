@@ -26,7 +26,7 @@ input = {} --Dummy table, hey
 hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
-knownip = {}
+dofile("watchlist.lua")
 schedmes = 0
 dofile("perms.lua") --Loading various permissions
 function inc(var,amt)
@@ -189,7 +189,7 @@ lcase = 0
 caps = 0
 
 if word_filter_mode > 0 then
-	ninput = string.gsub(ninput,"^.*>",""
+	ninput = string.gsub(ninput,"^.*>","")
 	if wordwarnlevel[player()] == nil then wordwarnlevel[player()] = 0 end
 
 
