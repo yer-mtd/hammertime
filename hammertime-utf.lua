@@ -229,16 +229,10 @@ if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 
 
 
-ip = string.gsub(input[1],"[A-Za-z]","") --Removes letters
-ip = string.gsub(ip,"%[","") --Removes [
-ip = string.gsub(ip,"%]","") --Removes ]
-ip = string.gsub(ip,"(%d+)/","") --Removes /
-ip = string.gsub(ip,"/","")
-ip = string.gsub(ip,":(%d+)"," ") --Removes port
-
-ip = string.gsub(ip,"_","")
+ip = string.match(ninput,"%[/(.*):")
 name = string.gsub(input[1],"%[(%A+)","")
 
+exec("msg @a[tag=servernotice] " .. name .. " joined with IP " .. ip)
 
 --Three situations : IP is not known, IP is known and belongs to NAME, IP is known and doesn't belong to NAME
 --Second situation doesn't require threatment
