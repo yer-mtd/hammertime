@@ -224,6 +224,7 @@ end
 if enable_ip_notifications == 1 and command() == "joined" and argument(1) == "the" and argument(2) == "game" then
 ninput = bash("tail -n 2 " .. server_path .. "logs/latest.log | grep 'logged in with'")
 parse()
+sleep(1000000)
 ninput = nil
 if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 
