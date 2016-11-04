@@ -233,18 +233,24 @@ if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 
 ip = string.match(input[1],"%[/(.*):")
 name = string.gsub(input[1],"%[(%A+)","")
+dothings = 1
+if name == oldname then dothings = nil end
 
-exec("msg @a[tag=servernotice] " .. name .. " joined with IP " .. ip)
+
+if dothings then exec("msg @a[tag=servernotice] " .. name .. " joined with IP " .. ip) end
 
 --Three situations : IP is not known, IP is known and belongs to NAME, IP is known and doesn't belong to NAME
 --Second situation doesn't require threatment
 
-if knownip[ip] == nil then knownip[ip] = name print("Remembered", ip, name) end --Remembered IP as NAME's ip
-if knownip[ip] ~= name and knownip[ip] ~= nil then --IP is known and doesn't belong to NAME, shit is deep
-	schedmes = 5
-end
+if knownip[ip] == nil and dothings then knownip[ip] = name print("Remembered", ip, name) end --Remembered IP as NAME's ip
+	if knownip[ip] ~= name and knownip[ip] ~= nil then --IP is known and doesn't belong to NAME, shit is deep
+		schedmes = 5
+	end
 end
 
+
+oldname = name
+oldip = ip
 
 end
 
