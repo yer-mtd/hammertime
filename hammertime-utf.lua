@@ -260,7 +260,7 @@ end
 --So let's see here. I have a part of an IP, and I want to match it with list of IPs I have
 
 for index,value in pairs(readknownip) do
-	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Similiar IP : " .. name .. " and " .. readknownip[index])
+	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Similiar IP : " .. name .. " and " .. readknownip[index]) end
 end
 
 
