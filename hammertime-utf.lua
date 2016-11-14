@@ -72,6 +72,7 @@ end
 
 
 function exec(cmd,t) --All it does is prepare a minecrafty input for bash function
+	if dynamic_session_name then session = bash("screen -ls | grep " .. server_name .. " | awk '{print $1}'") end
 	print(cmd)
 	bash("screen -S " .. session .. " -X stuff '" .. cmd .. "\\n'")
 	return nil
