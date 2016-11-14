@@ -22,6 +22,7 @@ dofile("hammertime.conf")
 votebalance = 0
 target = ""
 word = "a dummy string, hey"
+ninput = "dummy string"
 input = {} --Dummy table, hey
 hasvoted = {} --For callvote
 capswarnlevel = {}
@@ -65,8 +66,8 @@ function bash(cmd)
 	return s
 end
 function sleep(t)
-	while n < t do n=inc(n) end
-	n=0
+	--local time = os.clock() + t
+	--while os.clock() < time do end
 end
 
 
@@ -99,20 +100,23 @@ voted = {}
 print("Session is " .. session)
 n = 0
 
+while debug == 47 do
 
-while debug == 1 do
-
-
+sleep(0.1)
+print("A second had passed")
+print(os.clock())
 
 end
 
 while "True" do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
 sleep(100000)
 execd = 0 --idk
+oinput = ninput
 ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
+if oinput == ninput then dothings = nil else dothings = "True" end
 parse()
 
-
+if dothings then
 --Vhguide
 if command() == namespace then
 	if argument(1) == "callvote" then initvote = 1 end
@@ -276,4 +280,5 @@ exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip
 print("Warning", name, ip, knownip[ip])
 schedmes = -1
 end
+end -- for dothings
 end; --for while true
