@@ -29,12 +29,8 @@ input = {} --Dummy table, hey
 hasvoted = {} --For callvote
 capswarnlevel = {}
 wordwarnlevel = {}
+knownip = {}
 dofile("watchlist.lua")
---Making a read-only copy of knownip
-readknownip = {}
-for index,value in pairs(knownip) do
-readknownip[index] = value
-end
 
 
 
@@ -46,7 +42,7 @@ if amt then return var + amt else return var + 1 end
 end
 
 function parse(inp)
-	local ninput = inp
+	ninput = inp
 	if execd == 0 then
 		input = {}
 		tid = -3
@@ -207,7 +203,7 @@ lcase = 0
 caps = 0
 
 if word_filter_mode > 0 then
-	local ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
+	ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
 	ninput = string.gsub(ninput,"^.*>","")
 	if wordwarnlevel[player()] == nil then wordwarnlevel[player()] = 0 end
 
@@ -248,9 +244,9 @@ if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 
 
 
-local ip = string.match(input[1],"%[/(.*):")
-local name = string.gsub(input[1],"%[(%A+)","")
-local dothings = 1
+ip = string.match(input[1],"%[/(.*):")
+name = string.gsub(input[1],"%[(%A+)","")
+dothings = 1
 if name == oldname then dothings = nil end
 
 
@@ -261,15 +257,16 @@ if name == oldname then dothings = nil end
 
 if knownip[ip] == nil and dothings then knownip[ip] = name print("Remembered", ip, name) end --Remembered IP as NAME's ip
 	if knownip[ip] ~= name and knownip[ip] ~= nil then --IP is known and doesn't belong to NAME, shit is deep
-		schedmes = 5
+		exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip[ip] .. " IPs match ")
+print("Warning", name, ip, knownip[ip])
 	end
 end
 
 
 --So let's see here. I have a part of an IP, and I want to match it with list of IPs I have
 --if dothings then
-for index,value in pairs(readknownip) do
-	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Similiar IP : " .. name .. " and " .. readknownip[index]) end
+for index,value in pairs(ipblacklist) do
+	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Blacklisted IP : " .. name .. " // " .. readknownip[index]) end
 end
 --end
 
@@ -279,10 +276,5 @@ oldip = ip
 
 end
 
-schedmes = schedmes - 1
-if schedmes == 0 then
-exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip[ip] .. " IPs match ")
-print("Warning", name, ip, knownip[ip])
-schedmes = -1
-end
+
 end; --for while true
