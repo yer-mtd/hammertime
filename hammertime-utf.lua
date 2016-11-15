@@ -12,6 +12,8 @@
 --along with this program. If not, see http://www.gnu.org/licenses
 
 require "string"
+socket = require("socket")
+
 hammerver = "0.9.1"
 execd = 0
 
@@ -43,17 +45,23 @@ function inc(var,amt)
 if amt then return var + amt else return var + 1 end
 end
 
-function parse()
+function parse(inp)
+	local ninput = inp
 	if execd == 0 then
 		input = {}
 		tid = -3
 		if ninput == oinput then return nil end
-		oinput = ninput --Failsafe
 		for word in string.gmatch(ninput,"%S+") do
 			tid = inc(tid)
 			if tid > 0 then input[tid] = word end
 		end
 	end
+end
+
+function sleep(t)
+
+socket.sleep(t)
+
 end
 
 function bash(cmd)
@@ -65,7 +73,7 @@ function bash(cmd)
 	s = string.gsub(s, '[\n\r]+', ' ')
 	return s
 end
-function sleep(t)
+function waste(t)
 	--local time = os.clock() + t
 	--while os.clock() < time do end
 end
@@ -90,67 +98,8 @@ function player()
 end
 function argument(arg) return input[arg+2] end
 
-session = bash("screen -ls | grep " .. server_name .. " | awk '{print $1}'") --Getting screen session name
-
-
-math.randomseed( os.time() )
-caps = 0
-lcase = 0
-halted = 1
-voted = {}
-print("Session is " .. session)
-n = 0
-
-while debug == 47 do
-
-sleep(0.1)
-print("A second had passed")
-print(os.clock())
-
-end
-
-while "True" do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
-sleep(100000)
-execd = 0 --idk
-oinput = ninput
-ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
-if oinput == ninput then dothings = nil else dothings = "True" end
-parse()
-
-if dothings then
---Vhguide
-if command() == namespace then
-	if argument(1) == "callvote" then initvote = 1 end
-	if argument(1) == "apt-get" and argument(2) == "moo" then exec("/summon Cow 0 300 0") end
-	if argument(1) == "vote" then--for voteban
-		if hasvoted[player()] ~= nil then exec("/msg " .. player() .. " You have already voted") else
-			if argument(2) == "yes" then votebalance=votebalance + 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted YES (" .. votebalance .. ")") end
-			if argument(2) == "no" then votebalance=votebalance - 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted NO (" .. votebalance .. ")") end
-			if argument(2) == "fail" and callvoteperm[player()] == 2 then votebalance=-9001 exec("/say " .. player() .. " voted VERY NO (" .. votebalance .. ")") end
-		end
-	end
-end
-
-if command() == "hammertime" then
-	if argument(1) == "reloadconfig" then dofile("hammertime.conf") exec("/say Config reloaded") end
-	if argument(1) == "reloadperms" then dofile("perms.lua") exec("/say Permissions reloaded") end
-	if argument(1) == "about" then exec("/say Hammertime Panel v" .. hammerver) exec("/say Written in Lua by MetoolDaddy") exec("/say Have you apt-get moo today?") end
-
-end
-
---Movement messages (fly, speed, etc)
-if enable_movement_messages > 0 then
-	flyingman = bash("tail -3 " .. server_path .. "logs/latest.log | grep floating | awk '{print $4}'")
-	if flyingman ~= "" then exec("/msg @a[tag=servernotice] " .. flyingman .. " was kicked for flying!") sleep(1000000) end
-	if enable_movement_messages > 1 then
-		if command() == "moved" and argument(1) == "wrongly!" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. player() .. " is moving suspiciously") sleep(100000) end
-		if command() == "moved" and argument(1) == "too" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. player() .. " moved too fast") end
-	end
-end
-
---Voteban
-if initvote == 1 and votetime == nil then
-	initvote = 0
+function initvote() 
+if votetime == nil then
 	votebalance = 0
 if argument(2) == "kick" or argument(2) == "ban" then
 	if argument(3) == nil then
@@ -171,6 +120,61 @@ if argument(2) == "kick" or argument(2) == "ban" then
 	end
 end
 end
+end
+
+
+session = bash("screen -ls | grep " .. server_name .. " | awk '{print $1}'") --Getting screen session name
+
+
+math.randomseed( os.time() )
+caps = 0
+lcase = 0
+halted = 1
+voted = {}
+print("Session is " .. session)
+n = 0
+
+
+while debug == 42 do
+
+end
+
+
+while "True" do --------------------------------------------- OH GAWD FINALLY THE INFINITE LOOP SECTION
+--Vhguide
+sleep(0.07)
+parse(bash("tail -1 " .. server_path .. "logs/latest.log"))
+if command() == namespace then
+	if argument(1) == "callvote" then initvote() end
+	if argument(1) == "apt-get" and argument(2) == "moo" then exec("/summon Cow 0 300 0") end
+	if argument(1) == "vote" then--for voteban
+		if hasvoted[player()] ~= nil then exec("/msg " .. player() .. " You have already voted") else
+			if argument(2) == "yes" then votebalance=votebalance + 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted YES (" .. votebalance .. ")") end
+			if argument(2) == "no" then votebalance=votebalance - 1 hasvoted[player()] = 1 exec("/say " .. player() .. " voted NO (" .. votebalance .. ")") end
+			if argument(2) == "fail" and callvoteperm[player()] == 2 then votebalance=-9001 exec("/say " .. player() .. " voted VERY NO (" .. votebalance .. ")") end
+		end
+	end
+end
+
+if command() == "hammertime" then
+	if argument(1) == "reloadconfig" then dofile("hammertime.conf") exec("/say Config reloaded") end
+	if argument(1) == "reloadperms" then dofile("perms.lua") exec("/say Permissions reloaded") end
+	if argument(1) == "about" then exec("/say Hammertime Panel v" .. hammerver) exec("/say Written in Lua by MetoolDaddy") exec("/say Have you apt-get moo today?") end
+
+end
+
+--Movement messages (fly, speed, etc)
+if enable_movement_messages > 0 then
+	local flyingman = bash("tail -3 " .. server_path .. "logs/latest.log | grep floating | awk '{print $4}'")
+	if flyingman ~= "" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. flyingman .. " was kicked for flying!")  end
+	if enable_movement_messages > 1 then
+		if command() == "moved" and argument(1) == "wrongly!" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. player() .. " is moving suspiciously")  end
+		if command() == "moved" and argument(1) == "too" then exec("/msg @a[tag=" .. warning_message_tag .. "] " .. player() .. " moved too fast") end
+	end
+end
+
+--Voteban
+
 if votetime then
 --print(os.time() .. " " .. starttime+votetime)
 if os.time() > starttime + votetime then votetime = nil
@@ -203,6 +207,7 @@ lcase = 0
 caps = 0
 
 if word_filter_mode > 0 then
+	local ninput = bash("tail -1 " .. server_path .. "logs/latest.log")
 	ninput = string.gsub(ninput,"^.*>","")
 	if wordwarnlevel[player()] == nil then wordwarnlevel[player()] = 0 end
 
@@ -235,22 +240,21 @@ end
 
 
 if enable_ip_notifications == 1 and command() == "joined" and argument(1) == "the" and argument(2) == "game" then
-ninput = bash("tail -n 2 " .. server_path .. "logs/latest.log | grep 'logged in with'")
-parse()
-sleep(10000000)
+parse(bash("tail -n 2 " .. server_path .. "logs/latest.log | grep 'logged in with'"))
 ninput = nil
+
 if command() == "logged" and argument(1) == "in" and argument(2) == "with" then
 
 
 
 
-ip = string.match(input[1],"%[/(.*):")
-name = string.gsub(input[1],"%[(%A+)","")
-dothings = 1
+local ip = string.match(input[1],"%[/(.*):")
+local name = string.gsub(input[1],"%[(%A+)","")
+local dothings = 1
 if name == oldname then dothings = nil end
 
 
-if dothings then exec("msg @a[tag=servernotice] " .. name .. " joined with IP " .. ip) end
+--if dothings then exec("msg @a[tag=servernotice] " .. name .. " joined with IP " .. ip) end
 
 --Three situations : IP is not known, IP is known and belongs to NAME, IP is known and doesn't belong to NAME
 --Second situation doesn't require threatment
@@ -263,11 +267,11 @@ end
 
 
 --So let's see here. I have a part of an IP, and I want to match it with list of IPs I have
-
+--if dothings then
 for index,value in pairs(readknownip) do
 	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Similiar IP : " .. name .. " and " .. readknownip[index]) end
 end
-
+--end
 
 
 oldname = name
@@ -281,5 +285,4 @@ exec("/msg @a[tag=" .. warning_message_tag .. "] " .. name .. " and " .. knownip
 print("Warning", name, ip, knownip[ip])
 schedmes = -1
 end
-end -- for dothings
 end; --for while true
