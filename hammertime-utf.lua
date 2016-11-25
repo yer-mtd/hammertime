@@ -14,7 +14,7 @@
 require "string"
 socket = require("socket")
 
-hammerver = "0.9.1"
+hammerver = "0.9.2"
 execd = 0
 
 
