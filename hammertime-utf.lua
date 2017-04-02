@@ -267,6 +267,7 @@ end
 --if dothings then
 for index,value in pairs(ipblacklist) do
 	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Blacklisted IP : " .. name .. " // " .. ipblacklist[index]) end
+	os.execute("bash blacklist_scripts/"..ipblacklist[index]..".sh ".. name)
 end
 --end
 
