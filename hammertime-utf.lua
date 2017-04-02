@@ -266,7 +266,7 @@ end
 --So let's see here. I have a part of an IP, and I want to match it with list of IPs I have
 --if dothings then
 for index,value in pairs(ipblacklist) do
-	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Blacklisted IP : " .. name .. " // " .. readknownip[index]) end
+	if string.match(ip,index) then exec("/msg @a[tag=" .. warning_message_tag .. "] Blacklisted IP : " .. name .. " // " .. ipblacklist[value]) end
 end
 --end
 
